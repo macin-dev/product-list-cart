@@ -40,6 +40,7 @@ main{
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+    gap: 40px;
 }
 
 /*Cards section*/
@@ -172,7 +173,7 @@ article span{
     background-position: center;
 }
 
-.cart p {
+.cart .cart__empty p {
     margin-top: 20px;
     color: var(--Rose-500);
     text-align: center;
@@ -326,11 +327,19 @@ aside{
 .item__cart-container{
     display: grid;
     grid-template-columns: 40px repeat(2, 1fr) 2fr;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 35px);
     justify-items: flex-start;
     border-bottom: 1px solid var(--Rose-100);
-    padding-bottom: 20px;
+}
 
+.item__fully-cart{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 250px;
+    overflow: auto;
+    padding-bottom: 15px;
+    margin-top: 20px;
 }
 
 .item__cart-dt{
@@ -370,8 +379,9 @@ aside{
 }
 
 .item__total {
-    display: flex;
+    display: none;
     justify-content: space-between;
+    margin: 20px 0px;
 }
 
 .item__total > p {
@@ -385,7 +395,7 @@ aside{
 }
 
 .item__confirm {
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
@@ -402,6 +412,7 @@ aside{
     border-radius: 12px;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 8px;
     font-size: 16px;
 }
@@ -442,7 +453,12 @@ aside{
 
     .cart{
         width: 400px;
-        height: 500px;
+        height: 300px;
+    }
+
+    .item__cart-dt{
+        font-weight: normal;
+        font-size: 14px;
     }
 
     h1{

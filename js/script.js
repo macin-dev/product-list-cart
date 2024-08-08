@@ -1,5 +1,19 @@
+// Global variables
 const cardContent = document.querySelector(".card__items");
+const cart = document.querySelector(".cart");
+const cartNumber = document.querySelector(".cart__quantity-number");
+const cartFullyContainer = document.querySelector(".cart__fully");
+const totalContainer = document.querySelector(".item__total");
+const totalValue = document.createElement("p");
+const confirmContainer = document.querySelector(".item__confirm");
+const cartContainer = document.querySelector(".item__fully-cart");
+const cartParent = document.querySelector(".cart");
+const arryHTML = document.getElementsByClassName("item__image");
+const itemsContainer = document.querySelector(".item__fully-cart");
+const emptyCart = document.querySelector(".cart__empty");
 let cartForItems = [];
+
+
 
 const onCreateElement = ({ image, name, category, price }) => {
     
@@ -131,10 +145,9 @@ const onDisplay = async () => {
     }
 }
 
-
 const onHandleImageSize = async () => {
+
     const imgSize = document.querySelector(".item__image");
-    const arryHTML = document.getElementsByClassName("item__image");
 
     const data = await onGetData();
 
@@ -157,8 +170,6 @@ const onHandleImageSize = async () => {
         imgSize.classList.add("mobile");
     }
 }
-
-const cartContainer = document.querySelector(".item__fully-cart");
 
 const onFilterItems = ({id, name, price, thumbnail}) => {
 
@@ -190,22 +201,72 @@ const onFilterItems = ({id, name, price, thumbnail}) => {
         }
     }
 
-    console.log(cartForItems);
-
     onDisplayItem(cartForItems);
 
 }
 
+const onDisplayConfirm = () => {
+
+        // Total elements
+        const totalText = document.createElement("p");
+
+        // Confirm elements
+        const confirmText = document.createElement("div");
+        const confirmIcon = document.createElement("div");
+        const confirmIconText = document.createElement("p");
+        const confirmBtn = document.createElement("button");
+    
+        // Display Total section 
+        totalValue.classList.add("item__total-text");
+    
+        // Display Confirm section
+        confirmText.classList.add("item__confirm-text");
+        confirmIcon.classList.add("item__confirm-icon");
+        confirmBtn.classList.add("item__confirm-btn");
+        totalContainer.classList.add("item__active");
+    
+        // Add values
+        totalText.innerText = "Order Total";
+        confirmIconText.innerHTML = "p>This is a <b>Carbon-neutral</b> delivery</p>";
+        confirmBtn.innerText = "Confirm Order";
+    
+        // Append elements
+        totalContainer.appendChild(totalText);
+        totalContainer.appendChild(totalValue);
+    
+        confirmText.appendChild(confirmIcon);
+        confirmText.appendChild(confirmIconText);
+        confirmContainer.appendChild(confirmText);
+        confirmContainer.appendChild(confirmBtn);
+    
+        cartFullyContainer.appendChild(totalContainer);
+        cartFullyContainer.appendChild(confirmContainer);
+    
+        totalContainer.style.display = "flex";
+        confirmContainer.style.display = "flex";
+    
+}
 
 const onDisplayItem = (items) => {
 
-    const itemsContainer = document.querySelector(".item__fully-cart");
+    let totalItems = 0;
+    let quantity = 0;
+
+    if(!totalContainer.classList.contains("item__active")){
+        emptyCart.style.display = "none"
+        cart.style.height = "600px"
+        onDisplayConfirm();
+    };
 
     while(itemsContainer.lastChild){
         itemsContainer.removeChild(itemsContainer.lastChild);
     }
-    
+
     items.forEach((item) => {
+
+        totalItems += item.total;
+        quantity += item.quantity
+
         // Access DOM's Elements by document element(root)
         const list = document.createElement("div");
         const itemName = document.createElement("p");
@@ -235,10 +296,12 @@ const onDisplayItem = (items) => {
         list.appendChild(itemTotal);
         list.appendChild(itemRemove);
 
-
         itemsContainer.appendChild(list);
 
     })
+    
+    cartNumber.innerText = `(${quantity})`;
+    totalValue.innerText = `$${totalItems.toFixed(2)}`;
     
 }
 
