@@ -12,54 +12,74 @@ const arryHTML = document.getElementsByClassName("item__image");
 const itemsContainer = document.querySelector(".item__fully-cart");
 const emptyCart = document.querySelector(".cart__empty");
 let cartForItems = [];
+let retrievedData = [];
 
+const onAddItemBtn = (id_item) => {
 
-const onAddItemBtn = ({cardBtn, logoBtn, pBtn, objItem}) => {
+    const btn = document.getElementById(`btn-${id_item}`);
+    
+    // Remove child elements if exits
+    while(btn.lastChild){
+        btn.removeChild(btn.lastChild);
+    }
 
-    cardBtn.removeChild(logoBtn);
-
+    const plusParent = document.createElement("div");
     const plusBtn = document.createElement("div");
     const minParent = document.createElement("div");
     const minBtn = document.createElement("div");
-    const plusParent = document.createElement("div");
-    const validate = document.getElementById(`btn-id.${objItem.id}`);
+    const textBtn = document.createElement("p");
+
+    const validate = document.getElementById(`btn-id.${id_item}`);
 
     if (!validate) {
 
         // Add classes attributes
-        cardBtn.classList.add('item__button-click')
+        btn.classList.add('item__button-click')
         plusParent.classList.add("parent-btns");
         minParent.classList.add("parent-btns");
         plusBtn.classList.add("increment-btn");
         minBtn.classList.add("decrement-btn");
 
-        cardBtn.id = `btn-id.${objItem.id}`
-
         // Append childs elements
         plusParent.appendChild(plusBtn);
         minParent.appendChild(minBtn);
-        cardBtn.appendChild(minParent)
-        cardBtn.appendChild(pBtn)
-        cardBtn.appendChild(plusParent);
-
+        btn.appendChild(minParent)
+        btn.appendChild(textBtn)
+        btn.appendChild(plusParent);
+        
+        btn.id = `btn-${id_item}`
         plusBtn.style.backgroundImage = 'url("./assets/images/icon-increment-quantity.svg")';
         minBtn.style.backgroundImage = 'url("./assets/images/icon-decrement-quantity.svg")'
-        pBtn.innerText = 1;
+        textBtn.innerText = 1;
 
         // Add click event
         plusParent.onclick = () => {
-            onFilterItems(objItem);
+            onFilterItems(id_item);
         };
 
-        onFilterItems(objItem);
+        onFilterItems(id_item);
 
-        cardBtn.onclick = false;
+        btn.onclick = false;
 
     }
 }
 
+const onBtnOff = (parentElement) => {
+    const pBtn = document.createElement("p");
+    const logoBtn = document.createElement("div");
 
-const onCreateElement = ({ image, name, category, price }) => {
+    logoBtn.classList.add("item__addCart");
+    parentElement.classList.remove("item__button-click")
+
+    pBtn.innerText = "Add to Cart";
+    logoBtn.style.backgroundImage = 'url("./assets/images/icon-add-to-cart.svg")';
+
+    parentElement.appendChild(logoBtn);
+    parentElement.appendChild(pBtn);
+}
+
+
+const onCreateElement = ({ image, name, category, price, id_Item }) => {
 
     const cardContainer = document.createElement("div");
     const cardImage = document.createElement("div");
@@ -85,6 +105,9 @@ const onCreateElement = ({ image, name, category, price }) => {
     articleH2.innerText = name;
     articleSpan.innerText = `$${price}`;
     logoBtn.style.backgroundImage = 'url("./assets/images/icon-add-to-cart.svg")';
+    cardContainer.id = `card-id-${id_Item}`
+    cardBtn.id = `btn-${id_Item}`
+
 
     // Add class atribute
     cardContainer.classList.add("card__item");
@@ -93,20 +116,8 @@ const onCreateElement = ({ image, name, category, price }) => {
     articleSpan.classList.add("item__price");
     logoBtn.classList.add("item__addCart");
 
-    //Add an ID atribute
-    const idItem = `item${Math.random() * 1}`;
-    cardContainer.id = idItem;
-
-    // Store an object data structure all item data
-    const objItem = {
-        id: idItem,
-        name,
-        price,
-        thumbnail: image.thumbnail
-    }
-
     cardBtn.onclick = () => {
-        onAddItemBtn({cardBtn, logoBtn, pBtn, objItem})
+        onAddItemBtn(id_Item)
     };
 
     // Append HTMl elements
@@ -130,7 +141,12 @@ async function onGetData() {
     try {
         const response = await fetch("../data.json");
         const data = await response.json();
-        return data;
+        return data.map((i) => {
+            i.id_Item = Math.random();
+            i.quantity = 1;
+            i.total = i.price;
+            return i;    
+        });
     } catch (error) {
         console.log(error);
     }
@@ -138,10 +154,10 @@ async function onGetData() {
 }
 
 const onDisplay = async () => {
-    const data = await onGetData();
+    retrievedData = await onGetData();
 
-    for (let i = 0; i < data.length; i++) {
-        cardContent.appendChild(onCreateElement(data[i]));
+    for (let i = 0; i < retrievedData.length; i++) {
+        cardContent.appendChild(onCreateElement(retrievedData[i]));
     }
 }
 
@@ -171,29 +187,25 @@ const onHandleImageSize = async () => {
     }
 }
 
-const onFilterItems = ({ id, name, price, thumbnail }) => {
+const onFilterItems = (id_item) => {
 
-    const newItem = {
-        id,
-        name,
-        price,
-        thumbnail,
-        quantity: 1,
-        total: price
-    }
+    const btnValue = document.getElementById(`btn-${id_item}`).childNodes[1];
+
+    const newItem = retrievedData.filter( i => i.id_Item === id_item)[0];
 
     if (cartForItems.length === 0) {
         cartForItems.push(newItem);
     } else {
-        const existItem = cartForItems.some(item => item.id === id)
+        const existItem = cartForItems.some(item => item.id_Item === id_item);
 
         if (!existItem) {
             cartForItems = [newItem, ...cartForItems];
         } else {
             cartForItems = cartForItems.map(item => {
-                if (item.id === id) {
+                if (item.id_Item === id_item) {
                     item.quantity++;
                     item.total += item.price;
+                    btnValue.innerText = item.quantity;
                 }
 
                 return item;
@@ -227,7 +239,7 @@ const onDisplayConfirm = () => {
 
     // Add values
     totalText.innerText = "Order Total";
-    confirmIconText.innerHTML = "p>This is a <b>Carbon-neutral</b> delivery</p>";
+    confirmIconText.innerHTML = "<p>This is a <b>Carbon-neutral</b> delivery</p>";
     confirmBtn.innerText = "Confirm Order";
 
     // Append elements
