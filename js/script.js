@@ -178,29 +178,26 @@ const onDisplay = async () => {
     }
 }
 
-const onHandleImageSize = async () => {
+const onHandleImageSize = () => {
 
-    const imgSize = document.querySelector(".item__image");
+    const imgSize = document.getElementsByClassName("item__image");
 
-    const data = await onGetData();
+    if (window.innerWidth >= 1440 && imgSize[0].classList.contains("mobile")) {
 
-    if (window.innerWidth >= 1440 && imgSize.classList.contains("mobile")) {
-
-        data.forEach(({ image }, i) => {
+        retrievedData.forEach(({ image }, i) => {
             arryHTML[i].style.backgroundImage = `url(${image.desktop})`;
+            imgSize[i].classList.remove("mobile");
+            imgSize[i].classList.add("desktop");
         });
 
-        imgSize.classList.remove("mobile");
-        imgSize.classList.add("desktop");
+    } else if (window.innerWidth <= 1439 && imgSize[0].classList.contains("desktop")) {
 
-    } else if (window.innerWidth <= 1439 && imgSize.classList.contains("desktop")) {
-
-        data.forEach(({ image }, i) => {
+        retrievedData.forEach(({ image }, i) => {
             arryHTML[i].style.backgroundImage = `url(${image.mobile})`;
+            imgSize[i].classList.remove("desktop");
+            imgSize[i].classList.add("mobile");
         });
 
-        imgSize.classList.remove("desktop");
-        imgSize.classList.add("mobile");
     }
 }
 
