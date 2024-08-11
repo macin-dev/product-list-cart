@@ -31,6 +31,9 @@ const onAddItemBtn = (id_item) => {
 
     const validate = document.getElementById(`btn-id.${id_item}`);
 
+    // Outline selected item
+    btn.parentNode.classList.add("item__selected");
+
     if (!validate) {
 
         // Add classes attributes
@@ -83,6 +86,7 @@ const onRemoveItem = (id) => {
     logoBtn.classList.add("item__addCart");
     logoBtn.style.backgroundImage = 'url("./assets/images/icon-add-to-cart.svg")';
     btnValue.classList.remove("item__button-click");
+    btnValue.parentNode.classList.remove("item__selected");
     btnValue.appendChild(logoBtn);
     btnValue.appendChild(text);
     

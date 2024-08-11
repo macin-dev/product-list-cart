@@ -57,11 +57,14 @@ main{
 
 .item__image{
     height: 245px;
-    /* background-image: url("../assets/images/image-waffle-mobile.jpg"); */
     background-repeat: no-repeat;
     background-size: contain;
     position: relative;
     border-radius: 12px;
+}
+
+.item__selected{
+    border: 2px solid var(--red-color);
 }
 
 /*Button*/
