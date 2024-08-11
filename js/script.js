@@ -57,25 +57,42 @@ const onAddItemBtn = (id_item) => {
             onFilterItems(id_item);
         };
 
-        onFilterItems(id_item);
+        minParent.onclick = (e) => {
+            onDecreaseItem(e,id_item)
+        }
 
         btn.onclick = false;
 
+        onFilterItems(id_item);
+        
     }
 }
 
-const onBtnOff = (parentElement) => {
-    const pBtn = document.createElement("p");
+const onRemoveItem = (id) => {
+
+    const btnValue = document.getElementById(`btn-${id}`);
     const logoBtn = document.createElement("div");
+    const text = document.createElement("p");
 
+    
+    while(btnValue.lastChild){
+        btnValue.removeChild(btnValue.lastChild);
+    }
+    
+    text.innerText = "Add to Cart"
     logoBtn.classList.add("item__addCart");
-    parentElement.classList.remove("item__button-click")
-
-    pBtn.innerText = "Add to Cart";
     logoBtn.style.backgroundImage = 'url("./assets/images/icon-add-to-cart.svg")';
+    btnValue.classList.remove("item__button-click");
+    btnValue.appendChild(logoBtn);
+    btnValue.appendChild(text);
+    
+    btnValue.onclick = () => {
+        onAddItemBtn(id);
+    };
 
-    parentElement.appendChild(logoBtn);
-    parentElement.appendChild(pBtn);
+    cartForItems = cartForItems.filter((item) => item.id_Item !== id);
+    onDisplayItem(cartForItems);
+
 }
 
 
@@ -187,11 +204,36 @@ const onHandleImageSize = async () => {
     }
 }
 
+const onDecreaseItem = (e,id) => {
+    e.stopPropagation();
+
+    const btnValue = document.getElementById(`btn-${id}`);
+    const value = btnValue.childNodes[1];
+    
+    if(btnValue.innerText === "1"){
+        onRemoveItem(id)
+        return;
+    }
+
+    cartForItems = cartForItems.map(i => {
+        if(i.id_Item === id){
+            i.quantity--;
+            i.total -= i.price;
+            value.innerText = i.quantity;
+        }
+
+        return i;
+    })
+
+    onDisplayItem(cartForItems);
+}
+
+
 const onFilterItems = (id_item) => {
 
-    const btnValue = document.getElementById(`btn-${id_item}`).childNodes[1];
-
-    const newItem = retrievedData.filter( i => i.id_Item === id_item)[0];
+    const btnValue = document.getElementById(`btn-${id_item}`).childNodes[1]; 
+    const filteredItem = retrievedData.filter( i => i.id_Item === id_item)[0];
+    const newItem = {...filteredItem};
 
     if (cartForItems.length === 0) {
         cartForItems.push(newItem);
@@ -202,10 +244,16 @@ const onFilterItems = (id_item) => {
             cartForItems = [newItem, ...cartForItems];
         } else {
             cartForItems = cartForItems.map(item => {
+                
                 if (item.id_Item === id_item) {
+
+                    //const updateItem = {...item}
+
                     item.quantity++;
                     item.total += item.price;
                     btnValue.innerText = item.quantity;
+
+                    //return updateItem;
                 }
 
                 return item;
@@ -307,6 +355,10 @@ const onDisplayItem = (items) => {
         list.appendChild(itemPrice);
         list.appendChild(itemTotal);
         list.appendChild(itemRemove);
+
+        itemRemove.onclick = () => {
+            onRemoveItem(item.id_Item)
+        }
 
         itemsContainer.appendChild(list);
 
