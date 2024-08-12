@@ -17,11 +17,9 @@ let retrievedData = [];
 const onAddItemBtn = (id_item) => {
 
     const btn = document.getElementById(`btn-${id_item}`);
-    
+
     // Remove child elements if exits
-    while(btn.lastChild){
-        btn.removeChild(btn.lastChild);
-    }
+    onCleanChild(btn);
 
     const plusParent = document.createElement("div");
     const plusBtn = document.createElement("div");
@@ -49,7 +47,7 @@ const onAddItemBtn = (id_item) => {
         btn.appendChild(minParent)
         btn.appendChild(textBtn)
         btn.appendChild(plusParent);
-        
+
         btn.id = `btn-${id_item}`
         plusBtn.style.backgroundImage = 'url("./assets/images/icon-increment-quantity.svg")';
         minBtn.style.backgroundImage = 'url("./assets/images/icon-decrement-quantity.svg")'
@@ -61,13 +59,13 @@ const onAddItemBtn = (id_item) => {
         };
 
         minParent.onclick = (e) => {
-            onDecreaseItem(e,id_item)
+            onDecreaseItem(e, id_item)
         }
 
         btn.onclick = false;
 
         onFilterItems(id_item);
-        
+
     }
 }
 
@@ -77,11 +75,8 @@ const onRemoveItem = (id) => {
     const logoBtn = document.createElement("div");
     const text = document.createElement("p");
 
-    
-    while(btnValue.lastChild){
-        btnValue.removeChild(btnValue.lastChild);
-    }
-    
+    onCleanChild(btnValue);
+
     text.innerText = "Add to Cart"
     logoBtn.classList.add("item__addCart");
     logoBtn.style.backgroundImage = 'url("./assets/images/icon-add-to-cart.svg")';
@@ -89,7 +84,7 @@ const onRemoveItem = (id) => {
     btnValue.parentNode.classList.remove("item__selected");
     btnValue.appendChild(logoBtn);
     btnValue.appendChild(text);
-    
+
     btnValue.onclick = () => {
         onAddItemBtn(id);
     };
@@ -152,8 +147,6 @@ const onCreateElement = ({ image, name, category, price, id_Item }) => {
     cardContainer.appendChild(article);
 
     return cardContainer;
-
-
 }
 
 // Fetch - Format JSON
@@ -166,7 +159,7 @@ async function onGetData() {
             i.id_Item = Math.random();
             i.quantity = 1;
             i.total = i.price;
-            return i;    
+            return i;
         });
     } catch (error) {
         console.log(error);
@@ -205,19 +198,19 @@ const onHandleImageSize = () => {
     }
 }
 
-const onDecreaseItem = (e,id) => {
+const onDecreaseItem = (e, id) => {
     e.stopPropagation();
 
     const btnValue = document.getElementById(`btn-${id}`);
     const value = btnValue.childNodes[1];
-    
-    if(btnValue.innerText === "1"){
+
+    if (btnValue.innerText === "1") {
         onRemoveItem(id)
         return;
     }
 
     cartForItems = cartForItems.map(i => {
-        if(i.id_Item === id){
+        if (i.id_Item === id) {
             i.quantity--;
             i.total -= i.price;
             value.innerText = i.quantity;
@@ -229,12 +222,11 @@ const onDecreaseItem = (e,id) => {
     onDisplayItem(cartForItems);
 }
 
-
 const onFilterItems = (id_item) => {
 
-    const btnValue = document.getElementById(`btn-${id_item}`).childNodes[1]; 
-    const filteredItem = retrievedData.filter( i => i.id_Item === id_item)[0];
-    const newItem = {...filteredItem};
+    const btnValue = document.getElementById(`btn-${id_item}`).childNodes[1];
+    const filteredItem = retrievedData.filter(i => i.id_Item === id_item)[0];
+    const newItem = { ...filteredItem };
 
     if (cartForItems.length === 0) {
         cartForItems.push(newItem);
@@ -245,16 +237,11 @@ const onFilterItems = (id_item) => {
             cartForItems = [newItem, ...cartForItems];
         } else {
             cartForItems = cartForItems.map(item => {
-                
+
                 if (item.id_Item === id_item) {
-
-                    //const updateItem = {...item}
-
                     item.quantity++;
                     item.total += item.price;
                     btnValue.innerText = item.quantity;
-
-                    //return updateItem;
                 }
 
                 return item;
@@ -267,6 +254,12 @@ const onFilterItems = (id_item) => {
 }
 
 const onDisplayConfirm = () => {
+
+    // Clean containers
+    onCleanChild(totalContainer);
+    onCleanChild(confirmContainer);
+
+    emptyCart.style.display = "none"
 
     // Total elements
     const totalText = document.createElement("p");
@@ -308,19 +301,28 @@ const onDisplayConfirm = () => {
 
 }
 
+const onCleanChild = (parent) => {
+    while(parent.lastChild){
+        parent.removeChild(parent.lastChild);
+    }
+}
+
 const onDisplayItem = (items) => {
 
     let totalItems = 0;
     let quantity = 0;
 
-    if (!totalContainer.classList.contains("item__active")) {
-        emptyCart.style.display = "none"
-        cart.style.height = "600px"
-        onDisplayConfirm();
-    };
+    onCleanChild(itemsContainer);
 
-    while (itemsContainer.lastChild) {
-        itemsContainer.removeChild(itemsContainer.lastChild);
+    if(!totalContainer.classList.contains("item__active")){
+        onDisplayConfirm();
+    }
+
+    if(items.length === 0){
+        totalContainer.classList.remove("item__active");
+        emptyCart.style.display = "block";
+        totalContainer.style.display = "none";
+        confirmContainer.style.display = "none";
     }
 
     items.forEach((item) => {

@@ -160,6 +160,7 @@ article span{
     background-color: #fff;
     padding: 35px 30px;
     border-radius: 12px;
+    height: auto;
 }
 
 .cart__quantity{
