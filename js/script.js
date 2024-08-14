@@ -15,6 +15,7 @@ const arryHTML = document.getElementsByClassName("item__image");
 const itemsContainer = document.querySelector(".item__fully-cart");
 const emptyCart = document.querySelector(".cart__empty");
 const orderSection = document.querySelector(".item__cfn");
+const newOrderBtn = document.querySelector(".item__cfn-button");
 let cartForItems = [];
 let retrievedData = [];
 
@@ -260,6 +261,9 @@ const onFilterItems = (id_item) => {
 const onDisplayOrderItems = () => {
     orderSection.classList.add("confirm__active");
     document.body.style.overflow = "hidden";
+    newOrderBtn.addEventListener("click", () => {
+        location.reload()
+    });
     onDisplayOrder(cartForItems);
 }
 
