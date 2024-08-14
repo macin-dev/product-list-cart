@@ -1,3 +1,6 @@
+// Import external functions
+import { onDisplayOrder } from './modal.js';
+
 // Global variables
 const cardContent = document.querySelector(".card__items");
 const cart = document.querySelector(".cart");
@@ -11,6 +14,7 @@ const cartParent = document.querySelector(".cart");
 const arryHTML = document.getElementsByClassName("item__image");
 const itemsContainer = document.querySelector(".item__fully-cart");
 const emptyCart = document.querySelector(".cart__empty");
+const orderSection = document.querySelector(".item__cfn");
 let cartForItems = [];
 let retrievedData = [];
 
@@ -253,6 +257,12 @@ const onFilterItems = (id_item) => {
 
 }
 
+const onDisplayOrderItems = () => {
+    orderSection.classList.add("confirm__active");
+    document.body.style.overflow = "hidden";
+    onDisplayOrder(cartForItems);
+}
+
 const onDisplayConfirm = () => {
 
     // Clean containers
@@ -283,6 +293,7 @@ const onDisplayConfirm = () => {
     totalText.innerText = "Order Total";
     confirmIconText.innerHTML = "<p>This is a <b>Carbon-neutral</b> delivery</p>";
     confirmBtn.innerText = "Confirm Order";
+    confirmBtn.onclick = onDisplayOrderItems;
 
     // Append elements
     totalContainer.appendChild(totalText);
